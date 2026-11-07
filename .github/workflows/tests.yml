@@ -2,7 +2,8 @@ name: Tests
 
 on:
   push:
-    paths: ["container-security-scan.py", "tests/**", ".github/workflows/tests.yml"]
+    paths: ["container-security-scan.py", "README.md", "tests/**", ".github/workflows/tests.yml"]
+    # Tags (Releases): Pfadfilter gelten dafür nicht, die Tests laufen immer
   pull_request:
   workflow_dispatch:
 
@@ -39,3 +40,15 @@ jobs:
       - run: python3 -m unittest discover -s tests -p "test_docker.py" -v
         env:
           CSS_DOCKER_TESTS: "1"
+
+  installation:
+    name: Installscript und Releases
+    runs-on: ubuntu-26.04
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1  # v7.0.1
+        with:
+          fetch-depth: 0          # alle Tags: Prüfsumme und Installscript gegen das Release prüfen
+          persist-credentials: false
+      - run: python3 -m unittest discover -s tests -p "test_installation.py" -v
+        env:
+          CSS_RELEASE_TESTS: "1"
